@@ -37,3 +37,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 $env:PORT=4000; npm run dev
+
+$env:PORT=3000; npm run dev
+
+AI SDK รองรับกับ JS ที่เป็น BackEnd Nuxt / Next 
+- AI SDK คุยแทน LangChain ได้ แต่ตอนนี้ยังไม่สมบูรณ์
+- AI SDK Streaming 
+- AI SDK มี UI 
