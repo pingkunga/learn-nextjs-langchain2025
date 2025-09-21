@@ -2,9 +2,28 @@
 
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { useState } from "react"
+import { redirect, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { createClient } from '@/lib/server'
+
 
 function ChatPage() {
+    const router = useRouter()
+    const [checking, setChecking] = useState(true)
+
+    useEffect(() => {
+        async function checkAuth() {
+            const res = await fetch('/api/check-auth')
+            const result = await res.json()
+            if (!result.authenticated) {
+                router.push('/auth/login')
+            } else {
+                setChecking(false)
+            }
+        }
+        checkAuth()
+    }, [router])
+
 
     // useChat from 'ai/react'  // ตัวช่วยสร้าง chat interface (UI) แบบสำเร็จรูป
     const { messages, sendMessage, status } = useChat({
