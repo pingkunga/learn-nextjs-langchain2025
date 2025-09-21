@@ -2,14 +2,13 @@
 
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { createClient } from '@/lib/server'
 
 
 function ChatPage() {
     const router = useRouter()
-    const [checking, setChecking] = useState(true)
+    const [, setChecking] = useState(true)
 
     useEffect(() => {
         async function checkAuth() {
