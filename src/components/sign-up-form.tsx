@@ -17,6 +17,10 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  //custom field
+  const [displayName, setDisplayName] = useState('')
+  const [phone, setPhone] = useState('')
+  //custom field
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
@@ -41,11 +45,17 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/chat`,
+          data: {
+            //in supabase - raw_user_meta_data
+            display_name: displayName,
+            phone: phone,
+          }
         },
       })
       if (error) throw error
-      router.push('/auth/sign-up-success')
+      //router.push('/auth/sign-up-success')
+      router.push('/auth/login')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -63,6 +73,28 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="displayName">Display Name</Label>
+                <Input
+                    id="displayName"
+                    type="text"
+                    placeholder="Display Name"
+                    required
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                    id="phone"
+                    type="text"
+                    placeholder="Phone"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
