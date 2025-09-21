@@ -1,10 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
+import { LogoutButton } from '@/components/logout-button'
+import { createClient } from '@/lib/client'
+import { User } from '@supabase/supabase-js'
+
 
 export default function Chat() {
+  // State สำหรับเก็บข้อมูลผู้ใช้
+  const [, setUser] = useState<User | null>(null)
+  const [displayName, setDisplayName] = useState<string>('')
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // ดึงข้อมูล user ปัจจุบัน
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUser(user)
+        // ดึง display_name จาก user metadata
+        const displayNameFromMeta = user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'
+        setDisplayName(displayNameFromMeta)
+      }
+    }
+
+    getUser()
+
+    // Listen สำหรับการเปลี่ยนแปลง auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setUser(session.user)
+        const displayNameFromMeta = session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'User'
+        setDisplayName(displayNameFromMeta)
+      } else {
+        setUser(null)
+        setDisplayName('')
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   // ใช้ useChat hook เพื่อจัดการสถานะการสนทนา
   const { messages, sendMessage, status } = useChat({
@@ -21,8 +60,17 @@ export default function Chat() {
       
       {/* Header */}
       <div className="bg-white shadow-sm p-4 border-b">
-        <h1 className="text-xl font-semibold text-gray-800 text-center">AI Chatbot with LangChain.JS</h1>
-      </div>
+        <h1 className="text-xl font-semibold text-gray-800 text-center">NEXT+LangChain AI Chatbot</h1>
+        <div className="absolute top-4 right-4 flex items-center gap-3">
+          {displayName && (
+            <div className="text-sm text-gray-600">
+              <span className="hidden sm:inline">สวัสดี, </span>
+              <span className="font-medium text-gray-800">{displayName}</span>
+            </div>
+          )}
+          <LogoutButton />
+        </div>
+    </div>
 
       {/* Chat Messages Area */}
       <div className="flex-1 overflow-y-auto p-4">
