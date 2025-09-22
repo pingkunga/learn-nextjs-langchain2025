@@ -34,11 +34,15 @@ import {
 } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
 import { useChatContext } from "@/contexts/chat-context"
+import { DEFAULT_MODEL } from "@/constants/models"
+import { ModelSelector } from "./model-selector"
+
 
 export function ChatPromptKitFull() {
 
   const [prompt, setPrompt] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL)
   const { chatMessages, setChatMessages, showWelcome, setShowWelcome } = useChatContext()
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -91,6 +95,11 @@ export function ChatPromptKitFull() {
       <header className="bg-background z-10 flex h-16 w-full shrink-0 items-center gap-2 border-b px-4">
         <SidebarTrigger className="-ml-1" />
         <div className="text-foreground flex-1">New Chat</div>
+        {/* Model Selector */}
+        <ModelSelector
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+        />
       </header>
 
       <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto">
