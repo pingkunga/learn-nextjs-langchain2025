@@ -1,10 +1,13 @@
 "use client"
 
 import { Label } from "@/components/ui/label"
+import { useTheme } from "@/lib/theme-provider"
 import { useState } from "react"
 
+
 export function GeneralTab() {
-  const [theme, setTheme] = useState("system")
+  //const [theme, setTheme] = useState("system")
+  const { theme, setTheme } = useTheme()
   const [accentColor, setAccentColor] = useState("Blue")
   const [language, setLanguage] = useState("Auto-detect")
   const [spokenLanguage, setSpokenLanguage] = useState("Auto-detect")
@@ -28,7 +31,7 @@ export function GeneralTab() {
         <div className="relative">
           <select 
             value={theme}
-            onChange={(e) => setTheme(e.target.value)}
+            onChange={(e) => setTheme(e.target.value as "light" | "dark" | "system")}
             className="w-full px-3 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none shadow-sm text-sm"
             style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' }}
           >
