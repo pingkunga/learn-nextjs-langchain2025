@@ -123,6 +123,26 @@ export function ChatPromptKitFull() {
   
   // Focus textarea on component mount when on welcome screen
   useEffect(() => {
+    const supabaseClient = createClient()
+
+    const getUserData = async () => {
+      const { data: { user }, error } = await supabaseClient.auth.getUser()
+      if (error) {
+        console.error('Error fetching user data:', error)
+      } else {
+        if (user) {
+          setUserId(user.id)
+          console.log('User ID:', user.id)
+          const savedSessionId = localStorage.getItem('currentSessionId')
+          if (savedSessionId && showWelcome) {
+            setSessionId(savedSessionId)
+            setShowWelcome(false)  // hide welcome screen if has sessionId
+            console.log('Restored session ID from localStorage:', savedSessionId)
+          }
+        }
+      }
+    }
+    getUserData()
     if (showWelcome) {
       setTimeout(() => {
         textareaRef.current?.focus()
@@ -134,30 +154,29 @@ export function ChatPromptKitFull() {
 
     if (!prompt.trim()) return
 
-    setPrompt("")
-    setIsLoading(true)
-    setShowWelcome(false)
+     /**
+     * Structure:
+     * - role: 'user' - ระบุว่าเป็นข้อความจากผู้ใช้
+     * - parts: array ของส่วนประกอบข้อความ
+     *   - type: 'text' - ประเภทของเนื้อหา
+     *   - text: เนื้อหา prompt
+     */
+    const messageToSend = {
+      role: 'user' as const,
+      parts: [{ type: 'text' as const, text: prompt.trim() }],
+    };
 
-    // Add user message immediately
-    const newUserMessage = {
-      id: chatMessages.length + 1,
-      role: "user",
-      content: prompt.trim(),
-    }
+    // ส่งข้อความไปยัง AI ผ่าน useChat hook
+    sendMessage(messageToSend, {
+      body: {
+        userId: userId,                                                     // ส่ง user ID สำหรับการระบุตัวตน
+        sessionId: sessionId,                                               // ส่ง session ID สำหรับความต่อเนื่อง
+      },
+    })
 
-    setChatMessages([...chatMessages, newUserMessage])
-
-    // Simulate API response
-    setTimeout(() => {
-      const assistantResponse = {
-        id: chatMessages.length + 2,
-        role: "assistant",
-        content: `นี่คือการตอบกลับสำหรับคำถาม: "${prompt.trim()}"\n\nขอบคุณที่ถามคำถาม! ฉันพร้อมช่วยเหลือคุณในเรื่องต่างๆ`,
-      }
-
-      setChatMessages((prev) => [...prev, assistantResponse])
-      setIsLoading(false)
-    }, 1500)
+    // รีเซ็ต UI state
+    setPrompt("")                                                            // ล้างข้อความใน input
+    setShowWelcome(false)                                                    // ซ่อนหน้า welcome
   }
 
   const handleSamplePrompt = (samplePrompt: string) => {
