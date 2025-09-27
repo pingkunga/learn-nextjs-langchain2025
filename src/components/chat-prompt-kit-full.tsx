@@ -37,6 +37,23 @@ import { useChatContext } from "@/contexts/chat-context"
 import { DEFAULT_MODEL } from "@/constants/models"
 import { ModelSelector } from "./model-selector"
 
+import { useChat } from '@ai-sdk/react'                                      // Hook สำหรับจัดการ AI chat
+import { createCustomChatTransport } from '@/lib/custom-chat-transport';     // Custom transport สำหรับส่งข้อมูล
+import { createClient } from '@/lib/client'                                  // Supabase client
+
+/**
+ * Interface สำหรับ Message Object
+ * 
+ * Structure:
+ * - id: string - ID ของข้อความ
+ * - role: string - บทบาท ('user' หรือ 'assistant')
+ * - parts: Array - ส่วนประกอบของข้อความ
+ */
+interface MessageType {
+  id: string;                                                                // ID ของข้อความ
+  role: string;                                                              // บทบาทของผู้ส่ง (user/assistant)
+  parts: Array<{ type: string; text: string }>;                              // เนื้อหาข้อความแบบ parts สำหรับ Streaming
+}
 
 export function ChatPromptKitFull() {
 
@@ -47,6 +64,63 @@ export function ChatPromptKitFull() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  const [userId, setUserId] = useState<string>('')
+  const [sessionId, setSessionId] = useState<string | undefined>(undefined)   // chat session id
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false)             // loading chat history on sidebar
+  const [loadedMessages, setLoadedMessages] = useState<MessageType[]>([])     // messages loaded from history by sessionId
+  
+  // ============================================================================
+  // CHAT HOOK INITIALIZATION - การตั้งค่า useChat Hook
+  // ============================================================================
+
+  /**
+   * ใช้ useChat hook เพื่อจัดการสถานะการสนทนา
+   * 
+   * Purpose:
+   * - จัดการข้อความที่ส่งและรับ
+   * - จัดการสถานะการส่งข้อความ (loading, streaming)
+   * - ตั้งค่า custom transport สำหรับส่งข้อมูล
+   * - รับ session ID ใหม่จาก response header
+   * 
+   * Features:
+   * - messages: array ของข้อความในการสนทนาปัจจุบัน
+   * - sendMessage: ฟังก์ชันสำหรับส่งข้อความ
+   * - status: สถานะปัจจุบัน ('ready', 'submitted', 'streaming')
+   * - setMessages: ฟังก์ชันสำหรับตั้งค่าข้อความ
+   */
+  const { messages, sendMessage, status, setMessages } = useChat({
+    /**
+     * Custom transport configuration
+     * 
+     * Purpose:
+     * - กำหนด API endpoint ที่จะส่งข้อมูลไป
+     * - จัดการ response และดึง session ID
+     * - บันทึก session ID ไว้ใน localStorage
+     */
+    transport: createCustomChatTransport({
+      api: '/api/chat_05_history',                                           // API endpoint สำหรับส่งข้อความ
+      
+      /**
+       * Callback function ที่ทำงานเมื่อได้รับ response
+       * 
+       * Purpose:
+       * - ดึง session ID จาก response header
+       * - บันทึก session ID ใน state และ localStorage
+       * - ใช้สำหรับความต่อเนื่องของการสนทนา
+       * 
+       * @param response - Response object จาก API
+       */
+      onResponse: (response: Response) => {
+        const newSessionId = response.headers.get('x-session-id');           // ดึง session ID จาก header
+        if (newSessionId) {
+          console.log('Received new session ID:', newSessionId);
+          setSessionId(newSessionId);                                        // อัปเดต session ID ใน state
+          localStorage.setItem('currentSessionId', newSessionId);            // บันทึก sessionId ล่าสุดไว้ใน localStorage
+        }
+      },
+    }),
+  })
+  
   // Focus textarea on component mount when on welcome screen
   useEffect(() => {
     if (showWelcome) {
