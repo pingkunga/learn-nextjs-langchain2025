@@ -55,6 +55,47 @@ interface MessageType {
   parts: Array<{ type: string; text: string }>;                              // เนื้อหาข้อความแบบ parts สำหรับ Streaming
 }
 
+// Sample Prompt Interface
+interface SamplePrompt {
+  title: string;
+  prompt: string;
+  icon: string;
+}
+
+// Sample Prompt Data
+const samplePrompts: SamplePrompt[] = [
+    {
+      title: 'สรุปข้อมูลจากบทความ',
+      prompt: 'สามารถช่วยสรุปสาระสำคัญจากบทความที่ฉันให้มาได้ไหม?',
+      icon: '📋'
+    },
+    {
+      title: 'เขียนโค้ดให้ทำงาน',
+      prompt: 'ช่วยเขียนโค้ด Python สำหรับการอ่านไฟล์ CSV และแสดงข้อมูลเป็นกราฟ',
+      icon: '💻'
+    },
+    {
+      title: 'แปลภาษา',
+      prompt: 'ช่วยแปลข้อความนี้จากภาษาไทยเป็นภาษาอังกฤษ',
+      icon: '🌐'
+    },
+    {
+      title: 'วิเคราะห์ข้อมูล',
+      prompt: 'ช่วยวิเคราะห์ข้อมูลการขายของบริษัทในไตรมาสที่ผ่านมา',
+      icon: '📊'
+    },
+    {
+      title: 'เขียนอีเมล์',
+      prompt: 'ช่วยเขียนอีเมล์สำหรับขอนัดหมายประชุมกับลูกค้า',
+      icon: '✉️'
+    },
+    {
+      title: 'แก้ไขข้อผิดพลาด',
+      prompt: 'โค้ดของฉันมีข้อผิดพลาด สามารถช่วยหาและแก้ไขได้ไหม?',
+      icon: '🐛'
+    }
+]
+
 export function ChatPromptKitFull() {
 
   const [prompt, setPrompt] = useState("")
@@ -265,6 +306,30 @@ export function ChatPromptKitFull() {
     setPrompt(samplePrompt)
   }
 
+  // ============================================================================
+  // Authen Check - ตรวจสอบการเข้าสู่ระบบ
+  // ถ้าไม่มี userId แสดงหน้าขอให้ login ก่อนใช้งาน
+  // ============================================================================
+  if (!userId) {
+    return (
+      <main className="flex h-screen flex-col overflow-hidden">
+        {/* Header Section - ส่วนหัวของหน้า */}
+        <header className="bg-background z-10 flex h-16 w-full shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />                              {/* ปุ่มเปิด/ปิด sidebar */}
+          <div className="text-foreground flex-1">New Chat</div>            {/* ชื่อหน้า */}
+        </header>
+        
+        {/* Content Section - ส่วนเนื้อหาหลัก */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">กรุณาเข้าสู่ระบบ</h2>
+            <p className="text-gray-500">คุณต้องเข้าสู่ระบบก่อนเพื่อใช้งาน Chat</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="flex h-screen flex-col overflow-hidden">
       <header className="bg-background z-10 flex h-16 w-full shrink-0 items-center gap-2 border-b px-4">
@@ -305,7 +370,7 @@ export function ChatPromptKitFull() {
                * 2. Sample Prompts Grid
                * 3. Interactive Buttons สำหรับ quick start
                */
-              <div className="text-center max-w-2xl mx-auto">
+              <div className="text-center max-w-3xl mx-auto">
                 
                 {/* AI Avatar และ Welcome Message */}
                 <div className="mb-8">
@@ -316,80 +381,25 @@ export function ChatPromptKitFull() {
                     Welcome to PingkungA AI
                   </h1>
                   <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-                    Ask me anything, and I&aposll help you with coding,
-                    problem-solving, and creative tasks.
+                    ยินดีต้อนรับสู่ AI Chatbot ใช้ LangChain / Supabase / AI BackEnd (Azure AI Foundary, OpenAI, Ollama etc.)
+                    เริ่มต้นด้วยตัวอย่างด้านล่างหรือพิมพ์คำถามของคุณเลย
                   </p>                    
 
                 </div>
 
                 {/* Sample Prompts Grid - ตัวอย่างคำถามสำหรับ quick start */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                  
-                  {/* Sample Prompt 1: CSS Grid Layout */}
-                  <button
-                    onClick={() =>
-                      handleSamplePrompt(
-                        "How do I create a responsive layout with CSS Grid?"
-                      )
-                    }
-                    className="p-4 text-left rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <div className="font-medium text-slate-900 dark:text-white mb-1">
-                      CSS Grid Layout
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Learn how to create responsive layouts
-                    </div>
-                  </button>
-
-                  {/* Sample Prompt 2: React Hooks */}
-                  <button
-                    onClick={() =>
-                      handleSamplePrompt(
-                        "Explain React hooks and when to use them"
-                      )
-                    }
-                    className="p-4 text-left rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <div className="font-medium text-slate-900 dark:text-white mb-1">
-                      React Hooks
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Understanding hooks and their use cases
-                    </div>
-                  </button>
-
-                  {/* Sample Prompt 3: API Design */}
-                  <button
-                    onClick={() =>
-                      handleSamplePrompt(
-                        "What are the best practices for API design?"
-                      )
-                    }
-                    className="p-4 text-left rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <div className="font-medium text-slate-900 dark:text-white mb-1">
-                      API Design
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Best practices for building APIs
-                    </div>
-                  </button>
-
-                  {/* Sample Prompt 4: JavaScript Debugging */}
-                  <button
-                    onClick={() =>
-                      handleSamplePrompt("Help me debug this JavaScript error")
-                    }
-                    className="p-4 text-left rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <div className="font-medium text-slate-900 dark:text-white mb-1">
-                      Debug JavaScript
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Get help with debugging code issues
-                    </div>
-                  </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {samplePrompts.map((sample, index) => (
+                    <button 
+                      key={index}
+                      onClick={() => handleSamplePrompt(sample.prompt)}          // ใส่ prompt เมื่อคลิก
+                      className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg p-4 text-left transition"
+                    >
+                      <div className="text-3xl mb-2">{sample.icon}</div>          {/* ไอคอน */}
+                      <h3 className="font-semibold text-lg mb-1">{sample.title}</h3> {/* ชื่อ prompt */}
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{sample.prompt}</p> {/* คำอธิบาย */}
+                    </button>
+                  ))}
                 </div>
               </div>
             ) : (
@@ -534,8 +544,36 @@ export function ChatPromptKitFull() {
 
       <div className="bg-background z-10 shrink-0 px-3 pb-3 md:px-5 md:pb-5">
         <div className="mx-auto max-w-3xl">
+          {/* แสดงสถานะการพิมพ์ของ AI */}
+          {(status === 'submitted' || status === 'streaming') && 
+            <div className="text-gray-500 italic mb-2 text-sm">🤔 PingBot กำลังคิด...</div>
+          }
+          
+          {/* แสดงสถานะการโหลดประวัติ */}
+          {isLoadingHistory && 
+            <div className="text-blue-500 italic mb-2 text-sm">📚 กำลังโหลดประวัติการสนทนา...</div>
+          }
+
+          {/* ============================================================================ */}
+          {/* PROMPT INPUT COMPONENT - ส่วน input หลัก */}
+          {/* ============================================================================ */}
+          
+          {/*
+           * PromptInput Component
+           * 
+           * Purpose:
+           * - รับข้อความจากผู้ใช้
+           * - จัดการ loading state
+           * - ส่งข้อความเมื่อกด Enter หรือคลิกปุ่ม
+           * 
+           * Props:
+           * - isLoading: สถานะการโหลด
+           * - value: ข้อความในปัจจุบัน
+           * - onValueChange: callback เมื่อข้อความเปลี่ยน
+           * - onSubmit: callback เมื่อส่งข้อความ
+           */}
           <PromptInput
-            isLoading={isLoading}
+            isLoading={status !== 'ready'}
             value={prompt}
             onValueChange={setPrompt}
             onSubmit={handleSubmit}
@@ -549,6 +587,7 @@ export function ChatPromptKitFull() {
               />
 
               <PromptInputActions className="mt-5 flex w-full items-center justify-between gap-2 px-3 pb-3">
+                {/* Left Actions Group - กลุ่มปุ่มด้านซ้าย */}
                 <div className="flex items-center gap-2">
                   <PromptInputAction tooltip="Add a new action">
                     <Button
@@ -577,6 +616,7 @@ export function ChatPromptKitFull() {
                     </Button>
                   </PromptInputAction>
                 </div>
+                {/* Right Actions Group - กลุ่มปุ่มด้านขวา */}
                 <div className="flex items-center gap-2">
                   <PromptInputAction tooltip="Voice input">
                     <Button
@@ -590,13 +630,17 @@ export function ChatPromptKitFull() {
 
                   <Button
                     size="icon"
-                    disabled={!prompt.trim() || isLoading}
+                    disabled={!prompt.trim() || status !== 'ready' || !userId}
                     onClick={handleSubmit}
                     className="size-9 rounded-full"
                   >
-                    {!isLoading ? (
+
+                    {/* แสดง icon ตาม status */}
+                    {status === 'ready' ? (
+                      /* แสดงลูกศรเมื่อพร้อม */
                       <ArrowUp size={18} />
                     ) : (
+                      /* แสดง loading indicator */
                       <span className="size-3 rounded-xs bg-white" />
                     )}
                   </Button>
