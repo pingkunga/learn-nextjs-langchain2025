@@ -5,7 +5,7 @@ import { toUIMessageStream } from "@ai-sdk/langchain"
 import { createUIMessageStreamResponse, UIMessage } from "ai"
 import { RunnableWithMessageHistory } from '@langchain/core/runnables'
 import { PostgresChatMessageHistory } from "@langchain/community/stores/message/postgres"
-import { Pool } from 'pg'
+import { getDatabase } from '@/lib/database'
 
 /**
  * ===============================================
@@ -51,14 +51,7 @@ export const dynamic = 'force-dynamic'
 
 export const maxDuration = 30
 
-const pool = new Pool({
-  host: process.env.PG_HOST,                                        // ที่อยู่ database server
-  port: Number(process.env.PG_PORT),                               // พอร์ต database (แปลงเป็น number)
-  user: process.env.PG_USER,                                       // username สำหรับเข้าถึง database
-  password: process.env.PG_PASSWORD,                               // password สำหรับเข้าถึง database
-  database: process.env.PG_DATABASE,                               // ชื่อ database ที่ต้องการเชื่อมต่อ
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,  // SSL config สำหรับ production
-})
+const pool = getDatabase()
 
 // ===============================================
 // POST Handler - จัดการการส่งข้อความและตอบกลับ
@@ -154,14 +147,7 @@ export async function POST(req: NextRequest) {
     const messageHistory = new PostgresChatMessageHistory({
       sessionId: currentSessionId,                                  // ID ของ session ปัจจุบัน
       tableName: "chat_messages",                                   // ชื่อตารางในฐานข้อมูล
-      pool: new Pool({                                              // สร้าง pool ใหม่สำหรับ message history
-        host: process.env.PG_HOST,
-        port: Number(process.env.PG_PORT),
-        user: process.env.PG_USER,
-        password: process.env.PG_PASSWORD,
-        database: process.env.PG_DATABASE,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      }),
+      pool: pool,
     })
 
     const chainWithHistory = new RunnableWithMessageHistory({

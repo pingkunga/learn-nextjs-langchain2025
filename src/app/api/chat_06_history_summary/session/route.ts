@@ -37,11 +37,7 @@ import { getDatabase } from '@/lib/database'
 // export const runtime = "edge" // ปิดการใช้ Edge Runtime เพราะ pg ต้องการ Node.js APIs
 export const dynamic = 'force-dynamic'                                     // บังคับให้ response เป็น dynamic
 
-// ===============================================
-// Database Connection Pool Setup - ตั้งค่าการเชื่อมต่อฐานข้อมูล
-// ===============================================
-
-const pool = getDatabase()                                                 // ใช้ connection pool จาก database.ts
+const pool = getDatabase()                                                 // ใช้ connection pool จาก lib/database
 
 // ===============================================
 // GET Method: ดึงรายการ Chat Sessions

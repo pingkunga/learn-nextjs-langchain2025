@@ -19,6 +19,8 @@
 
 import { useState, useCallback } from 'react'
 import { generateUniqueId } from '@/lib/utils'
+import { API_BASE, buildApiUrl } from '@/constants/api'
+
 
 // ===============================================
 // Interface Definitions - กำหนดโครงสร้างข้อมูล
@@ -143,7 +145,7 @@ export function useChatHistory(initialSessionId?: string, userId?: string) {
 
     try {
       // Step 4: ส่ง request ไปยัง API
-      const response = await fetch('/api/chat_05_history', {
+      const response = await fetch(API_BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -254,8 +256,9 @@ export function useChatHistory(initialSessionId?: string, userId?: string) {
     
     try {
       // Step 2: ส่ง request ไป API สำหรับดึงประวัติ
-      const response = await fetch(`/api/chat_05_history?sessionId=${sessionId}`)
-      
+      const apiUrl = buildApiUrl(API_BASE, { sessionId })
+      const response = await fetch(apiUrl)
+
       if (!response.ok) {
         throw new Error('Failed to load chat history')
       }

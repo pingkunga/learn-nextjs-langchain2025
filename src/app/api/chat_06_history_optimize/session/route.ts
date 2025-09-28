@@ -41,7 +41,7 @@ export const dynamic = 'force-dynamic'                                     // �
 // Database Connection Pool Setup - ตั้งค่าการเชื่อมต่อฐานข้อมูล
 // ===============================================
 
-const pool = getDatabase()                                                 // ใช้ connection pool จาก database.ts
+const pool = getDatabase()                                                 // ใช้ connection pool จาก utility
 
 // ===============================================
 // GET Method: ดึงรายการ Chat Sessions
