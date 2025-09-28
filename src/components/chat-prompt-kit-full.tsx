@@ -307,6 +307,10 @@ export function ChatPromptKitFull() {
     setPrompt(samplePrompt)
   }
 
+  const handleStop = () => {
+    stop()                                                                   // หยุดการส่งข้อความ
+  }
+
   // ============================================================================
   // Authen Check - ตรวจสอบการเข้าสู่ระบบ
   // ถ้าไม่มี userId แสดงหน้าขอให้ login ก่อนใช้งาน
@@ -632,7 +636,9 @@ export function ChatPromptKitFull() {
                   <Button
                     size="icon"
                     disabled={!prompt.trim() || status !== 'ready' || !userId}
-                    onClick={handleSubmit}
+                    onClick={
+                      status === 'ready' ? handleSubmit : handleStop
+                    }
                     className="size-9 rounded-full"
                   >
 
