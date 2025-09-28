@@ -12,6 +12,20 @@ This project is a modern AI chatbot platform built with [Next.js](https://nextjs
 - Middleware for session and route protection
 - Custom API endpoints for authentication and chat
 
+
+## Environment Variables
+
+This project uses environment variables for API keys and service configuration. See the `.env.example` file for all required variables. All sensitive values in `.env.example` are blurred or replaced with placeholders for safety.
+
+**To use:**
+
+1. Copy `.env.example` to `.env` in your project root:
+	```bash
+	cp .env.example .env
+	```
+2. Fill in your real API keys and credentials in the new `.env` file.
+
+---
 ## Getting Started
 
 Install dependencies:
