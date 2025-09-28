@@ -1,46 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+# AI Chatbot Next.js + LangChain + AI SDK
+
+This project is a modern AI chatbot platform built with [Next.js](https://nextjs.org), integrating [LangChain](https://js.langchain.com/) and [AI SDK](https://github.com/vercel/ai) for advanced conversational AI features, streaming, and UI components.
+
+## Features
+
+- Built with Next.js App Router
+- AI SDK integration for chat, streaming, and UI
+- LangChain for advanced LLM orchestration
+- Supabase authentication (example)
+- Middleware for session and route protection
+- Custom API endpoints for authentication and chat
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+Run the development server (default port 3000):
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or run on a custom port (e.g. 4000):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
+```powershell
 $env:PORT=4000; npm run dev
+```
 
-$env:PORT=3000; npm run dev
+Open [http://localhost:3000](http://localhost:3000) or your chosen port in your browser.
 
-AI SDK รองรับกับ JS ที่เป็น BackEnd Nuxt / Next 
-- AI SDK คุยแทน LangChain ได้ แต่ตอนนี้ยังไม่สมบูรณ์
-- AI SDK Streaming 
-- AI SDK มี UI 
+## Project Structure
+
+```
+├── public/                     # Static assets (images, icons, etc.)
+├── src/
+│   ├── app/                    # Next.js app directory (routing, pages, API, components)
+│   │   ├── page.tsx            # Home page
+│   │   ├── chat/
+│   │   │   └── page.tsx        # Chat page (AI SDK + LangChain)
+│   │   ├── simplechat/
+│   │   │   └── page.tsx        # Simple chat page
+│   │   └── api/
+│   │       └── check-auth/
+│   │           └── route.ts    # API route for authentication check
+│   ├── components/             # React components (e.g. ChatPromptKitFull, ChatSimple)
+│   ├── lib/                    # Shared libraries (e.g. Supabase client)
+│   └── middleware.ts           # Route protection and session middleware
+├── package.json                # Project dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── next.config.ts              # Next.js configuration
+├── postcss.config.mjs          # PostCSS configuration
+├── eslint.config.mjs           # ESLint configuration
+└── README.md                   # Project documentation
+```
+
+## Usage
+
+- Home page (`/`) is public
+- All other pages require login (see `src/middleware.ts`)
+- Chat page uses AI SDK and LangChain for streaming chat
+
+## Notes
+
+- AI SDK can be used as a LangChain alternative for some use cases, but is still evolving
+- Supports streaming responses and UI out-of-the-box
+- For authentication, Supabase is used as an example (can be replaced)
+
+## Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [LangChain.js Documentation](https://js.langchain.com/docs/)
+- [AI SDK by Vercel](https://github.com/vercel/ai)
+
+---
+
+Feel free to customize and extend this project for your own AI chatbot needs!
