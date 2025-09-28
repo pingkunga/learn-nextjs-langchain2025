@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Anuphan, Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/lib/theme-provider"
+import "katex/dist/katex.min.css"
 
 const anuphan = Anuphan({
   variable: "--font-anuphan",
