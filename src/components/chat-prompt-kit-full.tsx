@@ -40,6 +40,7 @@ import { ModelSelector } from "./model-selector"
 import { useChat } from '@ai-sdk/react'                                      // Hook สำหรับจัดการ AI chat
 import { createCustomChatTransport } from '@/lib/custom-chat-transport';     // Custom transport สำหรับส่งข้อมูล
 import { createClient } from '@/lib/client'                                  // Supabase client
+import { API_BASE, buildApiUrl } from "@/constants/api" 
 
 /**
  * Interface สำหรับ Message Object
@@ -130,8 +131,9 @@ export function ChatPromptKitFull() {
     
     try {
       // เรียก API เพื่อดึงประวัติการสนทนา
-      const response = await fetch(`/api/chat_06_history_optimize?sessionId=${sessionIdToLoad}`)
-      
+      const apiUrl = buildApiUrl(API_BASE, { sessionId: sessionIdToLoad })
+      const response = await fetch(apiUrl)
+
       // ตรวจสอบว่า API response สำเร็จหรือไม่
       if (!response.ok) {
         throw new Error('Failed to load chat history')
@@ -220,7 +222,7 @@ export function ChatPromptKitFull() {
      * - บันทึก session ID ไว้ใน localStorage
      */
     transport: createCustomChatTransport({
-      api: '/api/chat_06_history_optimize',                                           // API endpoint สำหรับส่งข้อความ
+      api: API_BASE,                                           // API endpoint สำหรับส่งข้อความ
       
       /**
        * Callback function ที่ทำงานเมื่อได้รับ response

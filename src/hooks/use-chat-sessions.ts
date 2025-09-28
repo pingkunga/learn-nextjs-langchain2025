@@ -26,6 +26,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { API_BASE_SESSION, buildApiUrl } from '@/constants/api'
 
 // ===============================================
 // TypeScript Interface Definitions - กำหนด Type Definitions
@@ -162,8 +163,10 @@ export function useChatSessions(userId?: string) {
        * Expected Response:
        * - sessions: array ของ ChatSession objects
        */
-      const response = await fetch(`/api/chat_06_history_optimize/session?userId=${encodeURIComponent(userId)}`)
-      
+
+      const apiUrl = buildApiUrl(API_BASE_SESSION, { userId })
+      const response = await fetch(apiUrl)
+
       /**
        * ตรวจสอบ HTTP response status
        * 
@@ -280,7 +283,7 @@ export function useChatSessions(userId?: string) {
        * Expected Response:
        * - session: ChatSession object ที่สร้างใหม่
        */
-      const response = await fetch('/api/chat_06_history_optimize/session', {
+      const response = await fetch(API_BASE_SESSION, {
         method: 'POST',                                                     // HTTP POST method
         headers: {
           'Content-Type': 'application/json',                              // กำหนด content type
@@ -404,7 +407,7 @@ export function useChatSessions(userId?: string) {
        * Expected Response:
        * - session: ChatSession object ที่อัปเดตแล้ว
        */
-      const response = await fetch('/api/chat_06_history_optimize/session', {
+      const response = await fetch(API_BASE_SESSION, {
         method: 'PUT',                                                      // HTTP PUT method
         headers: {
           'Content-Type': 'application/json',                              // กำหนด content type
@@ -487,7 +490,8 @@ export function useChatSessions(userId?: string) {
     setError(null)
     
     try {
-      const response = await fetch(`/api/chat_06_history_optimize/session?sessionId=${sessionId}`, {
+      const apiUrl = buildApiUrl(API_BASE_SESSION, { sessionId })
+      const response = await fetch(apiUrl, {
         method: 'DELETE',
       })
       
