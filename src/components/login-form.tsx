@@ -45,13 +45,35 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     }
   }
 
+  const handleFillDemo = () => {
+    setEmail('samplemail@email.com')
+    setPassword('123456')
+  }
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
-        </CardHeader>
+        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardDescription>Enter your email below to login to your account</CardDescription>
+        <div className="mt-2 px-4 bg-yellow-300 p-2 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-800">Email: samplemail@email.com</p>
+              <p className="text-sm text-gray-800">Password: 123456</p>
+            </div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={handleFillDemo}
+              className="ml-2 bg-white hover:bg-gray-50"
+            >
+              Auto Fill
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
@@ -63,6 +85,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   placeholder="m@example.com"
                   required
                   value={email}
+                  autoComplete="email"
+                  tabIndex={1}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -81,11 +105,16 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   type="password"
                   required
                   value={password}
+                  autoComplete="current-password"
+                  tabIndex={2}  
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                tabIndex={3}
+                className="w-full" disabled={isLoading}>
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </div>
