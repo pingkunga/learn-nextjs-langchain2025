@@ -212,7 +212,7 @@ export function ChatPromptKitFull() {
    * - status: สถานะปัจจุบัน ('ready', 'submitted', 'streaming')
    * - setMessages: ฟังก์ชันสำหรับตั้งค่าข้อความ
    */
-  const { messages, sendMessage, status, setMessages } = useChat({
+  const { messages, sendMessage, status } = useChat({
     /**
      * Custom transport configuration
      * 
@@ -272,7 +272,7 @@ export function ChatPromptKitFull() {
         textareaRef.current?.focus()
       }, 100)
     }
-  }, [showWelcome])
+  }, [showWelcome, setShowWelcome]) // intentionally not including setShowWelcome to avoid unnecessary re-renders
 
   const handleSubmit = () => {
 
