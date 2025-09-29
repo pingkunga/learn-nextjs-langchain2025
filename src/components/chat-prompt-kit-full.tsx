@@ -22,12 +22,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 import {
   ArrowUp,
+  Check,
   Copy,
   Globe,
   Mic,
   MoreHorizontal,
   Pencil,
   Plus,
+  Square,
   ThumbsDown,
   ThumbsUp,
   Trash,
@@ -105,6 +107,12 @@ export function ChatPromptKitFull() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+   /**
+   * State สำหรับติดตาม copy status ของแต่ละข้อความ
+   * key: message id, value: boolean (true = เพิ่งกด copy)
+   */
+  const [copiedMessages, setCopiedMessages] = useState<Record<string, boolean>>({})
+  // ============================================================================
   const [userId, setUserId] = useState<string>('')
   const [sessionId, setSessionId] = useState<string | undefined>(undefined)   // chat session id
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)             // loading chat history on sidebar
@@ -212,7 +220,7 @@ export function ChatPromptKitFull() {
    * - status: สถานะปัจจุบัน ('ready', 'submitted', 'streaming')
    * - setMessages: ฟังก์ชันสำหรับตั้งค่าข้อความ
    */
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, setMessages, stop } = useChat({
     /**
      * Custom transport configuration
      * 
@@ -245,6 +253,10 @@ export function ChatPromptKitFull() {
     }),
   })
   
+  // ============================================================================
+  // Authentication and User Management - การจัดการผู้ใช้และการตรวจสอบสิทธิ์
+  // ============================================================================
+
   // Focus textarea on component mount when on welcome screen
   useEffect(() => {
     const supabaseClient = createClient()
@@ -267,12 +279,63 @@ export function ChatPromptKitFull() {
       }
     }
     getUserData()
+
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setUserId(session.user.id)                                           // เก็บ user ID
+      } else {
+        setUserId('')                                                        // ล้าง user ID
+      }
+    })
+
+    /**
+     * Cleanup function
+     * ยกเลิก subscription เมื่อ component unmount
+     */
+    return () => subscription.unsubscribe()
+
+  }, [showWelcome, setShowWelcome]) // intentionally not including setShowWelcome to avoid unnecessary re-renders
+
+  // ============================================================================
+  // UI FOCUS EFFECT - การจัดการ Focus ของ UI
+  // ============================================================================
+
+  useEffect(() => {
     if (showWelcome) {
       setTimeout(() => {
-        textareaRef.current?.focus()
+        textareaRef.current?.focus()                                         // Focus textarea หลังจาก 100ms
       }, 100)
     }
-  }, [showWelcome, setShowWelcome]) // intentionally not including setShowWelcome to avoid unnecessary re-renders
+  }, [showWelcome])
+
+  // ============================================================================
+  // CHAT RESET EFFECT - การจัดการการรีเซ็ต Chat
+  // ============================================================================
+
+  useEffect(() => {
+    // เมื่อกด New Chat (showWelcome = true จาก context)
+    if (showWelcome) {
+      // เคลียร์ sessionId และ messages ทันที
+      setSessionId(undefined)                                                // ล้าง session ID
+      setMessages([])                                                        // ล้างข้อความจาก useChat
+      setLoadedMessages([])                                                  // ล้างข้อความที่โหลดจากประวัติ
+    }
+  }, [showWelcome, setMessages])
+
+  // ============================================================================
+  // HISTORY LOADING EFFECT - การโหลดประวัติการสนทนา
+  // ============================================================================
+  useEffect(() => {
+    // โหลดประวัติเฉพาะเมื่อไม่ใช่ welcome state และมี sessionId
+    if (sessionId && userId && !showWelcome) {
+      loadChatHistory(sessionId)                                             // เรียกฟังก์ชันโหลดประวัติ
+    }
+  }, [sessionId, userId, showWelcome])
+
+
+  // ===========================================================================
+  // Event Handling
+  // ==========================================================================
 
   const handleSubmit = () => {
 
@@ -311,8 +374,26 @@ export function ChatPromptKitFull() {
     stop()                                                                   // หยุดการส่งข้อความ
   }
 
+  const handleCopyMessage = async (content: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      
+      // แสดง check icon
+      setCopiedMessages(prev => ({ ...prev, [messageId]: true }))
+      
+      // กลับไปเป็น copy icon หลังจาก 2 วินาที
+      setTimeout(() => {
+        setCopiedMessages(prev => ({ ...prev, [messageId]: false }))
+      }, 2000)
+      
+      console.log('Message copied to clipboard')
+    } catch (error) {
+      console.error('Failed to copy message:', error)
+    }
+  }
+
   // ============================================================================
-  // Authen Check - ตรวจสอบการเข้าสู่ระบบ
+  // Authen Guard - ตรวจสอบการเข้าสู่ระบบ
   // ถ้าไม่มี userId แสดงหน้าขอให้ login ก่อนใช้งาน
   // ============================================================================
   if (!userId) {
@@ -423,10 +504,38 @@ export function ChatPromptKitFull() {
                */
               <div className="space-y-3 max-w-3xl mx-auto w-full">
                 
-                {/* รวม loadedMessages และ messages จาก useChat */}
-                {[...loadedMessages, ...messages].map((message, index) => {
-                  const isAssistant = message.role === "assistant"            // ตรวจสอบว่าเป็นข้อความจาก AI หรือไม่
+               {/* รวม loadedMessages และ messages จาก useChat โดยกรองข้อความซ้ำ */}
+                {(() => {
+                  // สำหรับ New Chat ใช้เฉพาะ messages จาก useChat
+                  if (!sessionId || loadedMessages.length === 0) {
+                    return messages
+                  }
                   
+                  // สำหรับ chat ที่มีประวัติ ให้รวมกันโดยกรองซ้ำ
+                  const allMessages = [...loadedMessages, ...messages]
+                  const uniqueMessages = []
+                  const seenContent = new Set()
+                  
+                  for (const message of allMessages) {
+                    const content = typeof message === 'object' && 'parts' in message && message.parts
+                      ? message.parts.map((part) => 'text' in part ? part.text : '').join('')
+                      : String(message)
+                    
+                    const key = `${message.role}-${content}`
+                    if (!seenContent.has(key)) {
+                      seenContent.add(key)
+                      uniqueMessages.push(message)
+                    }
+                  }
+                  
+                  return uniqueMessages
+                })().map((message, index) => {
+                  const isAssistant = message.role === "assistant"
+                  
+                  // คำนวณ content สำหรับใช้ใน copy function
+                  const messageContent = typeof message === 'object' && 'parts' in message && message.parts
+                    ? message.parts.map((part) => 'text' in part ? part.text : '').join('')
+                    : String(message)
                   return (
                     /**
                      * Message Component
@@ -446,14 +555,9 @@ export function ChatPromptKitFull() {
                       <MessageContent
                         isAssistant={isAssistant}
                         bubbleStyle={true}
-                        markdown                                             // แสดงเป็น markdown format
+                        markdown={isAssistant} // แสดง markdown เฉพาะ assistant เท่านั้น
                       >
-                        {/* แปลงข้อความจาก parts structure เป็น string */}
-                        {typeof message === 'object' && 'parts' in message && message.parts
-                          ? message.parts.map((part) => 
-                              'text' in part ? part.text : ''
-                            ).join('')
-                          : String(message)}
+                        {messageContent}
                       </MessageContent>
                       
                       {/* Message Actions - ปุ่มสำหรับจัดการข้อความ */}
@@ -462,16 +566,21 @@ export function ChatPromptKitFull() {
                         bubbleStyle={true}
                       >
                         
-                        {/* Copy Button - ปุ่มสำหรับ copy ข้อความ */}
-                        <MessageAction tooltip="Copy" bubbleStyle={true}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0 text-gray-500 hover:text-gray-700 rounded-full"
-                          >
-                            <Copy size={14} />
-                          </Button>
-                        </MessageAction>
+                      {/* Copy Button - ปุ่มสำหรับ copy ข้อความ */}
+                      <MessageAction tooltip="Copy" bubbleStyle={true}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-gray-500 hover:text-gray-700 rounded-full"
+                          onClick={() => handleCopyMessage(messageContent, message.id)}
+                        >
+                           {copiedMessages[message.id] ? (
+                            <Check size={14} className="text-green-600" />
+                           ) : (
+                                <Copy size={14} />
+                          )}
+                        </Button>
+                      </MessageAction>
                         
                         {/* Assistant Message Actions - ปุ่มสำหรับข้อความจาก AI */}
                         {isAssistant && (
@@ -633,21 +742,28 @@ export function ChatPromptKitFull() {
                     </Button>
                   </PromptInputAction>
 
+                  {/* Send/Stop Button - ปุ่มส่งข้อความหรือหยุด */}
                   <Button
                     size="icon"
-                    disabled={!prompt.trim() || status !== 'ready' || !userId}
+                    disabled={
+                      (status === 'ready' && (!prompt.trim() || !userId)) ||
+                      (status !== 'ready' && status !== 'streaming' && status !== 'submitted')
+                    }
                     onClick={
                       status === 'ready' ? handleSubmit : handleStop
                     }
                     className="size-9 rounded-full"
+                    variant={status === 'ready' ? 'default' : 'destructive'}
                   >
-
                     {/* แสดง icon ตาม status */}
                     {status === 'ready' ? (
                       /* แสดงลูกศรเมื่อพร้อม */
                       <ArrowUp size={18} />
+                    ) : status === 'streaming' || status === 'submitted' ? (
+                      /* แสดงปุ่ม stop เมื่อกำลังส่ง */
+                      <Square size={18} fill="currentColor" />
                     ) : (
-                      /* แสดง loading indicator */
+                      /* แสดง loading indicator สำหรับ status อื่นๆ */
                       <span className="size-3 rounded-xs bg-white" />
                     )}
                   </Button>
