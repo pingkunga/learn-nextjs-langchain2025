@@ -76,10 +76,34 @@ Open [http://localhost:3000](http://localhost:3000) or your chosen port in your 
 ```
 
 ## Usage
-
 - Home page (`/`) is public
 - All other pages require login (see `src/middleware.ts`)
-- Chat page uses AI SDK and LangChain for streaming chat
+- Chat page uses AI SDK and LangChain for streaming chat (`/chat`)
+
+#### Sample Prompts for Tool Calling
+
+You can use the following sample prompts to interact with the chatbot and trigger tool calls:
+
+##### Tool 1: getProductInfoTool - ดูข้อมูลสินค้า
+- Gaming Mouse ราคาเท่าไหร่?
+- Smartwatch มีในสต็อกไหม?
+- Earbuds มีรายละเอียดสินค้าอย่างไร?
+
+##### Tool 2: getSalesDataTool - ดูประวัติการขาย
+- ขาย Gaming Mouse ได้กี่ชิ้นในเดือนที่ผ่านมา?
+- Smartwatch ขายไปแล้วกี่ชิ้น?
+- สรุปยอดขายของสินค้า Mechanical Keyboard
+
+##### เรียกทำงานพร้อมกันทั้ง 2 Tools
+- สินค้า Running Shoes ราคาเท่าไหร่ และขายไปแล้วกี่ชิ้น?
+- Gaming Mouse ขายไปได้กี่ชิ้นแล้ว และตอนนี้เหลือในสต็อกเท่าไหร่?
+- Smartwatch มีรายละเอียดสินค้าอย่างไร และขายไปแล้วกี่ชิ้น?
+
+##### แสดงเป็นตาราง Markdown
+- สินค้าที่มีคำว่า "shoes" ในชื่อ มีอะไรบ้าง แสดงเป็นตาราง
+- เปรียบเทียบยอดขายของ Gaming Mouse และ Shoes แสดงในตาราง
+
+คุณสามารถถามคำถามทั่วไปได้ด้วยเช่นกัน
 
 ## Notes
 

@@ -1,9 +1,9 @@
-//export const API_BASE = '/api/chat_06_history_optimize'
-//export const API_BASE_SESSION = '/api/chat_06_history_optimize/session'
+export const API_BASE = '/api/chat_07_history_with_tool_calling'
+export const API_BASE_SESSION = '/api/chat_07_history_with_tool_calling/session'
 
 
-export const API_BASE = '/api/chat_07_tool_calling_sample'
-export const API_BASE_SESSION = '/api/chat_07_tool_calling_sample/session'
+// export const API_BASE = '/api/chat_07_tool_calling_sample'
+// export const API_BASE_SESSION = '/api/chat_07_tool_calling_sample/session'
 
 export function buildApiUrl(endpoint: string, params?: Record<string, string | number | boolean>): string {
   if (!params || Object.keys(params).length === 0) {
