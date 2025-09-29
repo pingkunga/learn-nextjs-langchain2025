@@ -196,10 +196,10 @@ export default function Home() {
               <div className="h-6 w-6 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
                 <span className="text-white font-bold text-xs">AI</span>
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">Genius AI Chatbot</span>
+              <span className="text-lg font-bold text-slate-900 dark:text-white">PingkungA AI Chatbot</span>
             </div>
             <p className="text-slate-600 dark:text-slate-300">
-              © 2025 Genius AI Chatbot. สร้างด้วย ❤️ และ AI
+              © 2025 PingkungA AI Chatbot. สร้างด้วย ❤️ และ AI
             </p>
           </div>
         </div>
