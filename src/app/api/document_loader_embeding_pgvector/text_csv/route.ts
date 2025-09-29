@@ -79,12 +79,12 @@ export async function GET() {
     // ===============================================
     const rawDocs = await new DirectoryLoader("./data", {
         ".txt": (path) => new TextLoader(path),
-        // ".csv": (path) => new CSVLoader(path, {
-        //   column: undefined, // โหลดทุกคอลัมน์
-        //   separator: ",",    // ใช้ comma เป็นตัวแบ่ง ถ้าเป็น Pipe ให้เปลี่ยนเป็น "|"
-        //   // ไม่ต้องใส่ header: [...] ถ้าบรรทัดแรกเป็น header จริง
-        //   //header: ["ชื่อคอลัมน์1", "ชื่อคอลัมน์2", "ชื่อคอลัมน์3"] // กำหนด header เองถ้าต้องการ
-        // }),
+        ".csv": (path) => new CSVLoader(path, {
+          column: undefined, // โหลดทุกคอลัมน์
+          separator: ",",    // ใช้ comma เป็นตัวแบ่ง ถ้าเป็น Pipe ให้เปลี่ยนเป็น "|"
+          // ไม่ต้องใส่ header: [...] ถ้าบรรทัดแรกเป็น header จริง
+          //header: ["ชื่อคอลัมน์1", "ชื่อคอลัมน์2", "ชื่อคอลัมน์3"] // กำหนด header เองถ้าต้องการ
+        }),
     }).load();
 
     console.log(`📄 โหลดเอกสารสำเร็จ: ${rawDocs.length} ไฟล์`)
@@ -109,40 +109,40 @@ export async function GET() {
     const chunks = await splitter.splitDocuments(rawDocs);
     console.log(`✂️ แยกเอกสารเป็น ${chunks.length} ชิ้น`)
 
-    // ===============================================
-    // ✅ เพิ่มโค้ดส่วนนี้เพื่อทดสอบ ✅
-    // ===============================================
-    console.log("\n--- 🧐 ตัวอย่าง 3 Chunks แรก ---");
+    // // ===============================================
+    // // ✅ เพิ่มโค้ดส่วนนี้เพื่อทดสอบ ✅
+    // // ===============================================
+    // console.log("\n--- 🧐 ตัวอย่าง 3 Chunks แรก ---");
     
-    // ใช้ slice(0, 3) เพื่อเลือกมาแค่ 3 chunks แรก
-    chunks.slice(0, 3).forEach((chunk, index) => {
-        console.log(`\n--- Chunk ${index + 1} ---`);
-        console.log("เนื้อหา (Content):", chunk.pageContent);
-        console.log("ขนาด (Size):", chunk.pageContent.length);
-        console.log("ข้อมูลอ้างอิง (Metadata):", chunk.metadata);
-        console.log("---------------------\n");
-    });
-    // ===============================================
+    // // ใช้ slice(0, 3) เพื่อเลือกมาแค่ 3 chunks แรก
+    // chunks.slice(0, 3).forEach((chunk, index) => {
+    //     console.log(`\n--- Chunk ${index + 1} ---`);
+    //     console.log("เนื้อหา (Content):", chunk.pageContent);
+    //     console.log("ขนาด (Size):", chunk.pageContent.length);
+    //     console.log("ข้อมูลอ้างอิง (Metadata):", chunk.metadata);
+    //     console.log("---------------------\n");
+    // });
+    // // ===============================================
 
-    return NextResponse.json({ 
-      message: `โหลดเอกสาร ${rawDocs.length} ไฟล์ และแยกเป็น ${chunks.length} ชิ้นสำเร็จ`,
-      stats: {
-        previous_records: existingCount || 0,
-        total_documents: rawDocs.length,
-        total_chunks: chunks.length,
-        files_processed: [...new Set(chunks.map(c => c.metadata.source))].map(source => {
-          const filename = source.split('/').pop() || source.split('\\').pop()
-          const fileChunks = chunks.filter(c => c.metadata.source === source)
-          return {
-            filename,
-            chunks: fileChunks.length,
-            total_chars: fileChunks.reduce((sum, c) => sum + c.pageContent.length, 0)
-          }
-        }),
-        timestamp: new Date().toISOString()
-      },
-      success: true
-    })
+    // return NextResponse.json({ 
+    //   message: `โหลดเอกสาร ${rawDocs.length} ไฟล์ และแยกเป็น ${chunks.length} ชิ้นสำเร็จ`,
+    //   stats: {
+    //     previous_records: existingCount || 0,
+    //     total_documents: rawDocs.length,
+    //     total_chunks: chunks.length,
+    //     files_processed: [...new Set(chunks.map(c => c.metadata.source))].map(source => {
+    //       const filename = source.split('/').pop() || source.split('\\').pop()
+    //       const fileChunks = chunks.filter(c => c.metadata.source === source)
+    //       return {
+    //         filename,
+    //         chunks: fileChunks.length,
+    //         total_chars: fileChunks.reduce((sum, c) => sum + c.pageContent.length, 0)
+    //       }
+    //     }),
+    //     timestamp: new Date().toISOString()
+    //   },
+    //   success: true
+    // })
 
     // ===============================================
     // Step 3: เตรียม Embeddings และ Vector Store - Initialization
