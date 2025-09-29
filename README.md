@@ -198,6 +198,10 @@ YouTube: Smart Tech Store Thailand
   loc: { lines: { from: 30, to: 49 } }
 }
 
+บางเคส Chunk มีปัญหาได้ อย่าง Training Shoes 2390 พอแบ่ง Chunk 239089 มันเอา 89 ของ Record ถัดไปมาต่อเลย ถามราคาผิด
+--- Chunk 1 ---
+เนื้อหา (Content): idpidnamedescriptionpricestockcategoryimage_url 1 P 001 Running Shoes รองเท้าวิ่งนํ้าหนักเบารองรับแรงกระแทกเหมาะกับกา         ารวิ่งระยะไกล 2590156 Sports / images/p 1.png 2 P 002 Training Shoes รองเท้าฝึกซ้อมในยิมพื้นยึดเกาะดีระบายอากาศ 239089 Sports / images/p           2.png 3 P 003 Football Boots รองเท้าสตั๊ดสําหรับสนามหญ้าเกาะพื้นดียิงแม่นยํา 329034 Sports / images/p 3.png 4 P 004 Yoga Mat แผ่นโยคะกัน             นลื่นหนาพกพาง่ายเหมาะโยคะ / พิลาทิส 99078 Fitness / images/p 4.png 5 P 005 Smartwatch Series A นาฬิกาอัจฉริยะติดตามสุขภาพนับก้าวแจ้งเตือน             นสาย 4990123 Electronics / images/p 5.png 6 P 006 Wireless Earbuds หูฟังไร้สายเสียงชัดแบตอึดกันนํ้าระดับ IPX 4219067 Electronics / images         s/p 6.png 7 P 0074 KAction Camera กล้องแอคชัน 4 K กันสั่นกันนํ้าเหมาะเที่ยวผจญภัย 599045 Electronics / images/p 7.png 8 P 008 Office Chai          ir เก้าอี้สํานักงานรองรับสรีระปรับระดับได้นั่งสบาย 399029 Furniture / images/p 8.png 9 P 009 Gaming Mouse เมาส์เกมมิง DPI สูงปรับนํ้าหนัก                  กปุ่มลัดครบ 1290134 Electronics / images/p 9
+
 ## Notes
 
 - AI SDK can be used as a LangChain alternative for some use cases, but is still evolving
