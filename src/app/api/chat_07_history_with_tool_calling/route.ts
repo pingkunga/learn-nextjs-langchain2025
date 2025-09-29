@@ -50,6 +50,47 @@ const supabase = createClient(
 // ✨ NEW: สร้าง Tools สำหรับคุยกับ Supabase
 // ===============================================
 
+// Common Tools เช่น การตอบเวลาปัจจุบัน
+const getCurrentDateTimeTool = new DynamicStructuredTool({
+  name: "get_current_datetime",
+  description: "ดูวันที่และเวลาปัจจุบัน สามารถระบุรูปแบบการแสดงผลได้",
+  schema: z.object({
+    format: z.enum(["full", "date", "time", "iso"]).optional().describe("รูปแบบการแสดงผล: full=เต็ม, date=วันที่อย่างเดียว, time=เวลาอย่างเดียว, iso=รูปแบบ ISO")
+  }),
+  func: async ({ format = "full" }) => {
+    console.log(`🔧 TOOL CALLED: get_current_datetime with format="${format}"`);
+    try {
+      const now = new Date()
+      const thailandTime = new Intl.DateTimeFormat('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        weekday: 'long'
+      })
+
+      switch (format) {
+        case "date":
+          return `วันที่ปัจจุบัน: ${thailandTime.format(now).split(' ').slice(0, 4).join(' ')}`
+        case "time":
+          const timeOnly = thailandTime.format(now).split(' ').slice(-1)[0]
+          return `เวลาปัจจุบัน: ${timeOnly} น.`
+        case "iso":
+          return `วันที่และเวลาในรูปแบบ ISO: ${now.toISOString()}`
+        case "full":
+        default:
+          return `วันที่และเวลาปัจจุบัน: ${thailandTime.format(now)} (เขตเวลาประเทศไทย)`
+      }
+    } catch (error) {
+      console.error('Error getting datetime:', error)
+      return `เกิดข้อผิดพลาดในการดึงข้อมูลวันที่และเวลา: ${error instanceof Error ? error.message : 'Unknown error'}`
+    }
+  }
+})
+
 // สร้าง Tool สำหรับค้นหาข้อมูลสินค้า
 const getProductInfoTool = new DynamicStructuredTool({
     name: "get_product_info",
@@ -200,7 +241,7 @@ ${tableRows}
     },
 })
 
-const tools = [getProductInfoTool, getSalesDataTool];
+const tools = [getProductInfoTool, getSalesDataTool, getCurrentDateTimeTool];
 
 // ===============================================
 // ฟังก์ชันสำหรับนับ Token (Tiktoken)
