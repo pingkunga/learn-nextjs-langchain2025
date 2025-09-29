@@ -451,7 +451,7 @@ export async function POST(req: NextRequest) {
       - เช่น "กาแฟ" ลองค้นหาด้วย "coffee", "espresso"
       
       หากเกิด DATABASE_CONNECTION_ERROR ให้ตอบว่า "ขออภัยครับ ขณะนี้ไม่สามารถเข้าถึงฐานข้อมูลได้ กรุณาลองใหม่อีกครั้งในภายหลัง"
-      
+      หากมีผลลัพธ์จาก tool มากกว่า 1 รายการ ให้สรุปและแสดงรายการทั้งหมดในรูปแบบตาราง Markdown
       บริบทการสนทนาก่อนหน้านี้โดยสรุปคือ: {summary}`],
       new MessagesPlaceholder('chat_history'), // ประวัติการสนทนาก่อนหน้านี้
       ['human', '{input}'],

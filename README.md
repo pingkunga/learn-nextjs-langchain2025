@@ -101,7 +101,7 @@ You can use the following sample prompts to interact with the chatbot and trigge
 
 ##### แสดงเป็นตาราง Markdown
 - สินค้าที่มีคำว่า "shoes" ในชื่อ มีอะไรบ้าง แสดงเป็นตาราง
-- เปรียบเทียบยอดขายของ Gaming Mouse และ Shoes แสดงในตาราง
+- เปรียบเทียบยอดขายของ Gaming Mouse และ E-book Reader แสดงในตาราง
 
 คุณสามารถถามคำถามทั่วไปได้ด้วยเช่นกัน
 
