@@ -111,6 +111,17 @@ You can use the following sample prompts to interact with the chatbot and trigge
 - Supports streaming responses and UI out-of-the-box
 - For authentication, Supabase is used as an example (can be replaced)
 
+## Build
+
+```
+docker build -t pingkunga/pingnextbot:0.0.3 .  
+
+docker run --env-file .env -p 33000:3000 pingkunga/pingnextbot:0.0.3
+
+docker push pingkunga/pingnextbot:0.0.3    
+```
+
+
 ## Resources
 
 - [Next.js Documentation](https://nextjs.org/docs)
