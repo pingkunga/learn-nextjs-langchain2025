@@ -1,5 +1,5 @@
-export const API_BASE = '/api/chat_07_history_with_tool_calling'
-export const API_BASE_SESSION = '/api/chat_07_history_with_tool_calling/session'
+export const API_BASE = '/api/chat_08_rag'
+export const API_BASE_SESSION = '/api/chat_08_rag/session'
 
 
 // export const API_BASE = '/api/chat_07_tool_calling_sample'
